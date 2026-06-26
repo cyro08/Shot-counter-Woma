@@ -2,62 +2,92 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Shot Counter</title>
+<title>Shot-Counter</title>
 
 <style>
 body {
     margin: 0;
     font-family: Arial;
-    background-color: white; /* ✅ jetzt weiss */
     text-align: center;
+    background-color: white;
 }
 
-/* Logo */
+/* Titel */
+h1 {
+    margin: 20px;
+    font-size: 40px;
+}
+
+/* Wrapper für Hintergrund + Bars */
+#container {
+    position: relative;
+    width: 80%;
+    margin: auto;
+    margin-top: 30px;
+}
+
+/* ✅ Logo im Hintergrund */
 #logo {
-    width: 100%;
-    max-height: 50vh;
-    object-fit: contain;
-    margin-top: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    opacity: 0.12; /* transparent */
+    z-index: 0;
 }
 
 /* Diagramm */
 #chart {
-    width: 60%;
-    margin: 40px auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 /* Balken */
-.bar-container {
-    margin: 12px 0;
-    cursor: pointer;
-}
-
 .bar {
-    height: 55px;
+    height: 60px;
     display: flex;
     align-items: center;
-    padding-left: 20px;
     border-radius: 12px;
     font-size: 22px;
     font-weight: bold;
+
+    padding-left: 20px;
     color: black;
+
+    cursor: pointer;
+    transition: 0.2s;
 }
 
+/* ausgewählt */
 .selected {
-    outline: 4px solid black; /* ✅ besser sichtbar auf weiss */
+    outline: 4px solid black;
 }
 
+/* Gewinner */
 .winner {
     border: 3px solid gold;
 }
+
 </style>
 </head>
 
 <body>
 
-<img src="index.jpg" id="logo">
+<h1>Shot‑Counter</h1>
 
-<div id="chart"></div>
+<div id="container">
+
+    <!-- ✅ Hintergrund Logo -->
+    <img src="index.jpg" id="logo">
+
+    <!-- Balken -->
+    <div id="chart"></div>
+
+</div>
 
 <script>
 let teams = [
@@ -68,22 +98,25 @@ let teams = [
 
 let selectedTeam = 0;
 
+// ➕
 function addPoint() {
     teams[selectedTeam].score++;
     drawChart();
 }
 
+// ➖
 function removePoint() {
     teams[selectedTeam].score = Math.max(0, teams[selectedTeam].score - 1);
     drawChart();
 }
 
+// Team auswählen
 function selectTeam(index) {
     selectedTeam = index;
     drawChart();
 }
 
-/* ✅ Tastatursteuerung */
+// ✅ Tastatur
 document.addEventListener("keydown", function(event) {
     if (event.code === "Space") {
         event.preventDefault();
@@ -95,7 +128,7 @@ document.addEventListener("keydown", function(event) {
     }
 });
 
-/* Diagramm */
+// Zeichnen
 function drawChart() {
     let chart = document.getElementById("chart");
     chart.innerHTML = "";
@@ -108,15 +141,18 @@ function drawChart() {
         let originalIndex = teams.indexOf(t);
 
         chart.innerHTML += `
-            <div class="bar-container" onclick="selectTeam(${originalIndex})">
-                <div class="bar 
-                    ${originalIndex === selectedTeam ? "selected" : ""} 
-                    ${index === 0 ? "winner" : ""}"
-                    style="width:${width}%; background:${t.color};">
-                    
-                    ${t.name} — ${t.score}
-                    ${index === 0 ? " 🏆" : ""}
-                </div>
+            <div 
+                class="bar 
+                ${originalIndex === selectedTeam ? "selected" : ""} 
+                ${index === 0 ? "winner" : ""}" 
+                
+                onclick="selectTeam(${originalIndex})"
+                
+                style="width:${width}%; background:${t.color};">
+
+                ${t.name} — ${t.score}
+                ${index === 0 ? " 🏆" : ""}
+
             </div>
         `;
     });
