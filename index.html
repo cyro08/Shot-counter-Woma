@@ -1,142 +1,90 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Shot Counter</title>
+<meta charset="UTF-8">
+<title>Shot Counter</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            color: white;
-            text-align: center;
+<style>
+body {
+    margin: 0;
+    color: white;
+    text-align: center;
+    font-family: Arial;
+    background: url('index.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
 
-            background: url('index.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
+#team {
+    font-size: 40px;
+    margin-top: 40px;
+}
 
-        h1 {
-            margin-top: 20px;
-        }
+#score {
+    font-size: 80px;
+    margin: 20px;
+}
 
-        /* Unsichtbare Klickzonen */
-        .click-area {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            top: 0;
-        }
+#chart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 300px;
+    gap: 20px;
+}
 
-        .left {
-            left: 0;
-        }
+.bar {
+    width: 60px;
+    background: rgba(0,150,255,0.8);
+}
 
-        .right {
-            right: 0;
-        }
+/* unsichtbare Klickflächen */
+.left, .right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+}
 
-        /* Anzeige */
-        #currentTeam {
-            font-size: 40px;
-            margin-top: 50px;
-        }
-
-        #score {
-            font-size: 80px;
-            margin: 20px;
-        }
-
-        /* Diagramm */
-        #chart {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            height: 300px;
-            gap: 20px;
-        }
-
-        .bar {
-            width: 60px;
-            background: rgba(0, 150, 255, 0.8);
-            text-align: center;
-        }
-
-        .bar span {
-            display: block;
-            margin-top: 5px;
-        }
-    </style>
+.left { left: 0; }
+.right { right: 0; }
+</style>
 </head>
+
 <body>
 
 <h1>🥃 Shot Counter</h1>
 
-<div id="currentTeam"></div>
+<div id="team"></div>
 <div id="score"></div>
 
-<!-- Klickbereiche -->
-<div class="click-area left" onclick="minus()"></div>
-<div class="click-area right" onclick="plus()"></div>
+<div class="left" onclick="minus()"></div>
+<div class="right" onclick="plus()"></div>
 
-<!-- Diagramm -->
 <div id="chart"></div>
 
 <script>
-    // ✅ Teams hier definieren (KEIN Eingabefeld nötig)
-    let teams = [
-        { name: "Team A", score: 0 },
-        { name: "Team B", score: 0 },
-        { name: "Team C", score: 0 }
-    ];
+let teams = [
+    { name: "Team A", score: 0 },
+    { name: "Team B", score: 0 },
+    { name: "Team C", score: 0 }
+];
 
-    let current = 0;
+let current = 0;
 
-    function update() {
-        document.getElementById("currentTeam").innerText = teams[current].name;
-        document.getElementById("score").innerText = teams[current].score;
+function update() {
+    document.getElementById("team").innerText = teams[current].name;
+    document.getElementById("score").innerText = teams[current].score;
+    drawChart();
+}
 
-        drawChart();
-    }
+function plus() {
+    teams[current].score++;
+    next();
+}
 
-    function plus() {
-        teams[current].score++;
-        nextTeam();
-    }
+function minus() {
+    teams[current].score = Math.max(0, teams[current].score - 1);
+    next();
+}
 
-    function minus() {
-        if (teams[current].score > 0) {
-            teams[current].score--;
-        }
-        nextTeam();
-    }
-
-    function nextTeam() {
-        current++;
-        if (current >= teams.length) current = 0;
-        update();
-    }
-
-    function drawChart() {
-        const chart = document.getElementById("chart");
-        chart.innerHTML = "";
-
-        let max = Math.max(...teams.map(t => t.score), 1);
-
-        teams.forEach(team => {
-            let height = (team.score / max) * 100;
-
-            chart.innerHTML += `
-                <div class="bar" style="height:${height}%">
-                    ${team.score}
-                    <span>${team.name}</span>
-                </div>
-            `;
-        });
-    }
-
-    update();
-</script>
-
-</body>
-</html>
+function next() {
