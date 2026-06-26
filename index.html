@@ -7,60 +7,58 @@
 <style>
 body {
     margin: 0;
+    font-family: Arial;
     color: white;
     text-align: center;
-    font-family: Arial;
     background: url('index.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
 h1 {
-    margin-top: 20px;
-}
-
-#team {
-    font-size: 40px;
-    margin-top: 40px;
-}
-
-#score {
-    font-size: 80px;
     margin: 20px;
 }
 
+/* Team-Auswahl */
+#teamSelect {
+    font-size: 20px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+button {
+    font-size: 20px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+/* Diagramm */
 #chart {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    height: 320px;
-    gap: 25px;
+    width: 80%;
+    margin: auto;
     margin-top: 30px;
 }
 
+/* Balken */
 .bar-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 10px 0;
 }
 
 .bar {
-    width: 70px;
-    border-radius: 10px 10px 0 0;
+    height: 50px;
+    line-height: 50px;
+    text-align: left;
+    padding-left: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
+/* Gewinner */
 .winner {
-    border: 4px solid gold;
+    border: 3px solid gold;
 }
-
-.left, .right {
-    position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
-}
-
-.left { left: 0; }
-.right { right: 0; }
 </style>
 </head>
 
@@ -68,12 +66,16 @@ h1 {
 
 <h1>🥃 Shot Counter</h1>
 
-<div id="team"></div>
-<div id="score"></div>
+<!-- Team auswählen -->
+<select id="teamSelect"></select>
 
-<div class="left" onclick="minus()"></div>
-<div class="right" onclick="plus()"></div>
+<br>
 
+<!-- Steuerung -->
+<button onclick="addPoint()">+1</button>
+<button onclick="removePoint()">-1</button>
+
+<!-- Diagramm -->
 <div id="chart"></div>
 
 <script>
@@ -83,53 +85,57 @@ let teams = [
     { name: "Spielplatzverein", score: 0, color: "#66cc66" }
 ];
 
-let current = 0;
+// Dropdown füllen
+function init() {
+    let select = document.getElementById("teamSelect");
 
-function update() {
-    document.getElementById("team").innerText = teams[current].name;
-    document.getElementById("score").innerText = teams[current].score;
+    teams.forEach((t, i) => {
+        select.innerHTML += `<option value="${i}">${t.name}</option>`;
+    });
+
     drawChart();
 }
 
-function plus() {
-    teams[current].score++;
-    next();
+// + Punkt
+function addPoint() {
+    let i = document.getElementById("teamSelect").value;
+    teams[i].score++;
+    drawChart();
 }
 
-function minus() {
-    teams[current].score = Math.max(0, teams[current].score - 1);
-    next();
+// - Punkt
+function removePoint() {
+    let i = document.getElementById("teamSelect").value;
+    teams[i].score = Math.max(0, teams[i].score - 1);
+    drawChart();
 }
 
-function next() {
-    current = (current + 1) % teams.length;
-    update();
-}
-
+// Diagramm
 function drawChart() {
     let chart = document.getElementById("chart");
     chart.innerHTML = "";
 
+    // Sortieren (Gewinner oben)
     let sorted = [...teams].sort((a, b) => b.score - a.score);
+
     let max = Math.max(...teams.map(t => t.score), 1);
 
     sorted.forEach((t, index) => {
-        let height = (t.score / max) * 250;
+        let width = (t.score / max) * 100;
 
         chart.innerHTML += `
             <div class="bar-container">
-                <div class="bar ${index === 0 ? "winner" : ""}" 
-                     style="height:${height}px; background:${t.color};">
+                <div class="bar ${index === 0 ? "winner" : ""}"
+                     style="width:${width}%; background:${t.color};">
+                    ${t.name} – ${t.score}
+                    ${index === 0 ? " 🏆" : ""}
                 </div>
-                <div>${t.name}</div>
-                <div>${t.score}</div>
-                ${index === 0 ? "<div>🏆</div>" : ""}
             </div>
         `;
     });
 }
 
-update();
+init();
 </script>
 
 </body>
