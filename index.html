@@ -14,45 +14,46 @@ body {
     background-size: cover;
 }
 
+/* Logo */
 h1 {
-    margin: 20px;
-}
-
-/* Team-Auswahl */
-#teamSelect {
-    font-size: 20px;
-    padding: 10px;
-    margin-bottom: 20px;
+    margin-top: 40px;
+    text-align: center;
 }
 
 /* Buttons */
 button {
-    font-size: 20px;
-    padding: 10px 20px;
-    margin: 5px;
+    font-size: 22px;
+    padding: 10px 25px;
+    margin: 10px;
     cursor: pointer;
 }
 
 /* Diagramm */
 #chart {
     width: 80%;
-    margin: auto;
-    margin-top: 30px;
+    margin: 40px auto;
 }
 
 /* Balken */
 .bar-container {
-    margin: 10px 0;
+    margin: 12px 0;
+    cursor: pointer;
 }
 
 .bar {
-    height: 50px;
-    line-height: 50px;
-    text-align: left;
+    height: 55px;
+    display: flex;
+    align-items: center;
     padding-left: 15px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 18px;
     font-weight: bold;
+    transition: 0.2s;
+}
+
+/* ausgewähltes Team */
+.selected {
+    outline: 4px solid white;
 }
 
 /* Gewinner */
@@ -65,11 +66,6 @@ button {
 <body>
 
 <h1>🥃 Shot Counter</h1>
-
-<!-- Team auswählen -->
-<select id="teamSelect"></select>
-
-<br>
 
 <!-- Steuerung -->
 <button onclick="addPoint()">+1</button>
@@ -85,28 +81,23 @@ let teams = [
     { name: "Spielplatzverein", score: 0, color: "#66cc66" }
 ];
 
-// Dropdown füllen
-function init() {
-    let select = document.getElementById("teamSelect");
-
-    teams.forEach((t, i) => {
-        select.innerHTML += `<option value="${i}">${t.name}</option>`;
-    });
-
-    drawChart();
-}
+let selectedTeam = 0;
 
 // + Punkt
 function addPoint() {
-    let i = document.getElementById("teamSelect").value;
-    teams[i].score++;
+    teams[selectedTeam].score++;
     drawChart();
 }
 
 // - Punkt
 function removePoint() {
-    let i = document.getElementById("teamSelect").value;
-    teams[i].score = Math.max(0, teams[i].score - 1);
+    teams[selectedTeam].score = Math.max(0, teams[selectedTeam].score - 1);
+    drawChart();
+}
+
+// Team auswählen
+function selectTeam(index) {
+    selectedTeam = index;
     drawChart();
 }
 
@@ -123,11 +114,17 @@ function drawChart() {
     sorted.forEach((t, index) => {
         let width = (t.score / max) * 100;
 
+        // Original Index wiederfinden
+        let originalIndex = teams.indexOf(t);
+
         chart.innerHTML += `
-            <div class="bar-container">
-                <div class="bar ${index === 0 ? "winner" : ""}"
-                     style="width:${width}%; background:${t.color};">
-                    ${t.name} – ${t.score}
+            <div class="bar-container" onclick="selectTeam(${originalIndex})">
+                <div class="bar 
+                    ${originalIndex === selectedTeam ? "selected" : ""} 
+                    ${index === 0 ? "winner" : ""}"
+                    style="width:${width}%; background:${t.color};">
+                    
+                    ${t.name} — ${t.score}
                     ${index === 0 ? " 🏆" : ""}
                 </div>
             </div>
@@ -135,7 +132,7 @@ function drawChart() {
     });
 }
 
-init();
+drawChart();
 </script>
 
 </body>
