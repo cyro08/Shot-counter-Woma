@@ -8,21 +8,21 @@
 body {
     margin: 0;
     font-family: Arial;
+    background-color: white; /* ✅ jetzt weiss */
     text-align: center;
-    background: url('index.jpg') no-repeat;
-    background-size: contain;
-    background-position: center top;
-    background-color: black;
 }
 
-h1 {
-    margin: 40px;
-    color: white;
+/* Logo */
+#logo {
+    width: 100%;
+    max-height: 50vh;
+    object-fit: contain;
+    margin-top: 20px;
 }
 
 /* Diagramm */
 #chart {
-    width: 80%;
+    width: 60%;
     margin: 40px auto;
 }
 
@@ -36,44 +36,26 @@ h1 {
     height: 55px;
     display: flex;
     align-items: center;
-    padding-left: 15px;
+    padding-left: 20px;
     border-radius: 12px;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
     color: black;
 }
 
-/* ausgewähltes Team */
 .selected {
-    outline: 4px solid white;
+    outline: 4px solid black; /* ✅ besser sichtbar auf weiss */
 }
 
-/* Gewinner */
 .winner {
     border: 3px solid gold;
 }
-
-/* unsichtbare Klickzonen */
-.left, .right {
-    position: fixed;
-    top: 0;
-    width: 50%;
-    height: 100%;
-}
-
-.left { left: 0; }
-.right { right: 0; }
-
 </style>
 </head>
 
 <body>
 
-<h1>🥃 Shot Counter</h1>
-
-<!-- Maussteuerung optional -->
-<div class="left" onclick="removePoint()"></div>
-<div class="right" onclick="addPoint()"></div>
+<img src="index.jpg" id="logo">
 
 <div id="chart"></div>
 
@@ -86,28 +68,25 @@ let teams = [
 
 let selectedTeam = 0;
 
-// ➕ Punkt
 function addPoint() {
     teams[selectedTeam].score++;
     drawChart();
 }
 
-// ➖ Punkt
 function removePoint() {
     teams[selectedTeam].score = Math.max(0, teams[selectedTeam].score - 1);
     drawChart();
 }
 
-// Team auswählen
 function selectTeam(index) {
     selectedTeam = index;
     drawChart();
 }
 
-// ✅ Tastatur-Steuerung
+/* ✅ Tastatursteuerung */
 document.addEventListener("keydown", function(event) {
     if (event.code === "Space") {
-        event.preventDefault(); // verhindert Scrollen
+        event.preventDefault();
         addPoint();
     }
     if (event.code === "Backspace" || event.code === "Delete") {
@@ -116,7 +95,7 @@ document.addEventListener("keydown", function(event) {
     }
 });
 
-// Diagramm
+/* Diagramm */
 function drawChart() {
     let chart = document.getElementById("chart");
     chart.innerHTML = "";
@@ -130,17 +109,14 @@ function drawChart() {
 
         chart.innerHTML += `
             <div class="bar-container" onclick="selectTeam(${originalIndex})">
-
                 <div class="bar 
                     ${originalIndex === selectedTeam ? "selected" : ""} 
                     ${index === 0 ? "winner" : ""}"
                     style="width:${width}%; background:${t.color};">
-
+                    
                     ${t.name} — ${t.score}
                     ${index === 0 ? " 🏆" : ""}
-
                 </div>
-
             </div>
         `;
     });
